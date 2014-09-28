@@ -19,7 +19,7 @@ def new_payload(**contents):
 def get_endpoint(endpoint, pages=1, **payload):
     results = []
     for i in range(pages):
-        results.append(get_endpoint_page(endpoint, i, payload))
+        results.extend(get_endpoint_page(endpoint, i, payload))
     return results
 
 def get_endpoint_page(endpoint, page, payload):

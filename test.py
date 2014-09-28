@@ -1,4 +1,4 @@
-from httmock import all_requests, HTTMock, response
+from httmock import all_requests, HTTMock, response, urlmatch
 import requests
 import app
 
@@ -33,12 +33,58 @@ def no_results(url, request):
             None, 5, request)
 
 
+@all_requests
+def companies(url, request):
+    headers = {'content-type': 'application/json'}
+    content = {
+                "metadata": {
+                    "image_path_prefix": "http://images.crunchbase.com/",
+                    "www_path_prefix": "http://www.crunchbase.com/",
+                    "api_path_prefix": "http://api.crunchbase.com/v/2/",
+                    "version": 2
+                },
+                "data": {
+                    "paging": {
+                        "items_per_page": 1000,
+                        "current_page": 1,
+                        "number_of_pages": 260,
+                        "next_page_url": "http://api.crunchbase.com/v/2/organizations?organization_types=company&page=2",
+                        "prev_page_url": "",
+                        "total_items": 259707,
+                        "sort_order": "custom"
+                    },
+                    "items": [
+                        {
+                            "updated_at": 1411892082,
+                            "created_at": 1398010616,
+                            "path": "organization/google",
+                            "name": "Google",
+                            "type": "Organization"
+                        }
+                    ]
+                }
+            }
+    return response(200, content, headers,
+            None, 5, request)
+
 def test_error():
     with HTTMock(error):
-        print(app.get_endpoint('organizations'))
+        result = app.get_endpoint('organizations')
+        assert result != None
+        assert result == []
 
 def test_no_results():
     with HTTMock(no_results):
         result = app.get_endpoint('organizations')
         assert result != None
         assert result == []
+
+def test_companies():
+    with HTTMock(companies):
+        result = app.get_endpoint('organizations')
+        assert result != None
+        assert result != []
+        assert len(result) == 1
+        assert result[0]['name'] == "Google"
+        assert result[0]['path'] == 'organization/google'
+

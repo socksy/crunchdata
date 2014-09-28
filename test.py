@@ -1,6 +1,7 @@
 from httmock import all_requests, HTTMock, response, urlmatch
 import requests
 import app
+import json
 
 @all_requests
 def error(url, request):
@@ -67,6 +68,13 @@ def companies(url, request):
     return response(200, content, headers,
             None, 5, request)
 
+@all_requests
+def products(url, request):
+    headers = {'content-type': 'application/json'}
+    content = json.load(open('test_products.json'))
+    return response(200, content, headers, 
+            None, 5, request)
+
 def test_error():
     with HTTMock(error):
         result = app.get_endpoint('organizations')
@@ -87,4 +95,15 @@ def test_companies():
         assert len(result) == 1
         assert result[0]['name'] == "Google"
         assert result[0]['path'] == 'organization/google'
+
+
+def test_products():
+    with HTTMock(products):
+        result = app.get_endpoint('products')
+        assert result != None
+        assert result != []
+        assert len(result) == 1000
+        assert result[0]['name'] == "Longmire Robert Taylor Leather Coat"
+        assert result[0]['path'] == 'product/longmire-robert-taylor-leather-coat'
+        assert result[999]['name'] == 'FitLine'
 

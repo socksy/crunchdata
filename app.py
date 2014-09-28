@@ -25,7 +25,11 @@ def get_endpoint(endpoint, pages=1, **payload):
 def get_endpoint_page(endpoint, page, payload):
     payload = new_payload(page=str(page), **payload)
     r = requests.get(base_url + endpoint, params=payload)
-    return r.json()['data']['items']
+
+    results = r.json()['data']
+    if 'error' in results:
+        return []
+    return results['items']
 
 if __name__ == "__main__":
     companies = get_endpoint('organizations', 1, organization_types="company")

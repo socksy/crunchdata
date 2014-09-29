@@ -2,6 +2,8 @@ import json
 import requests
 import os
 import sys
+from flask import Flask, render_template
+app = Flask(__name__)
 
 base_url = "http://api.crunchbase.com/v/2/"
 try:
@@ -38,18 +40,34 @@ class Entity:
     def __init__(self, entity_dict):
        self.name = entity_dict['name']
        self.type = entity_dict['type']
+       print('.')
        if 'path' in entity_dict:
            self.endpoint = entity_dict['path']
            more = get_endpoint(self.endpoint)[0]
-           image = 'http://images.crunchbase.com/' + more['items']['path']
 
+           image_end = more['relationships']['images']['items'][0]['path']
+           image_base = 'http://images.crunchbase.com/' 
+           self.image = image_base + image_end
+    
 def get_companies():
     raw_companies = get_endpoint('organizations', 1, organization_types="company")
+    #TODO change this so we can sanely deal with pagination
+    raw_companies = raw_companies[:10] 
     companies = []
-    for company in companies:
+    for company in raw_companies:
         companies.append(Entity(company))
     return companies
 
+#ugly hack to get something in global scope for the time being
+companies = None
+@app.route('/')
+def companies():
+
+    return render_template('companies.html', companies=companies)
+
 if __name__ == "__main__":
-    companies = get_endpoint('organizations', 1, organization_types="company")
-    print(companies)
+#    companies = get_endpoint('organizations', 1, organization_types="company")
+#    print(companies)
+    companies = get_companies()
+    print (companies)
+    app.run()

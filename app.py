@@ -29,7 +29,26 @@ def get_endpoint_page(endpoint, page, payload):
     results = r.json()['data']
     if 'error' in results:
         return []
-    return results['items']
+    elif 'items' in results:
+        return results['items']
+    else:
+        return [results]
+
+class Entity:
+    def __init__(self, entity_dict):
+       self.name = entity_dict['name']
+       self.type = entity_dict['type']
+       if 'path' in entity_dict:
+           self.endpoint = entity_dict['path']
+           more = get_endpoint(self.endpoint)[0]
+           image = 'http://images.crunchbase.com/' + more['items']['path']
+
+def get_companies():
+    raw_companies = get_endpoint('organizations', 1, organization_types="company")
+    companies = []
+    for company in companies:
+        companies.append(Entity(company))
+    return companies
 
 if __name__ == "__main__":
     companies = get_endpoint('organizations', 1, organization_types="company")

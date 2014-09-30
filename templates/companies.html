@@ -5,6 +5,7 @@
 	{% for company in companies %}
 	<li><h2>{{ company.name }}</h2>
 		<img src={{ company.image }} alt="image of company"></img>
+        <p>{{ company.description }}</p>
 	</li>
 	{% else %}
 	<li>For some reason, no companies were loaded</li>

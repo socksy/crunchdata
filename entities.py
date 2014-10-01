@@ -45,8 +45,13 @@ class Entity:
         print('.')
         more = get_endpoint(self.endpoint)[0]
         self.get_images(more)
+        self.get_description(more)
 
     def get_images(self, more_info):
         image_base = 'http://images.crunchbase.com/' 
         image_end = more_info['relationships']['primary_image']['items'][0]['path']
         self.image = image_base + image_end
+
+    def get_description(self, more_info):
+        self.description = more_info['data']['properties']['description']
+        self.short_description = more_info['data']['properties']['short_description']

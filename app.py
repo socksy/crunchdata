@@ -3,7 +3,12 @@ from flask import Flask, render_template
 app = Flask(__name__)
 #ugly hack to get something in global scope for the time being
 companies = []
+
 @app.route('/')
+def root():
+    return render_template('base.html')
+
+@app.route('/companies')
 def companies():
     for company in companies[:10]:
         company.get_additional_info()

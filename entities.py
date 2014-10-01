@@ -53,5 +53,6 @@ class Entity:
         self.image = image_base + image_end
 
     def get_description(self, more_info):
-        self.description = more_info['data']['properties']['description']
-        self.short_description = more_info['data']['properties']['short_description']
+        pass
+        #self.description = more_info['data']['properties']['description']
+        #self.short_description = more_info['data']['properties']['short_description']

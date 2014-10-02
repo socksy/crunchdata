@@ -33,19 +33,32 @@ def get_endpoint_page(endpoint, page, payload):
     else:
         return [results]
 
+def get_individual_entity(endpoint):
+    return Entity(get_endpoint(endpoint)[0]).__dict__
+
 class Entity:
     def __init__(self, entity_dict):
-        self.name = entity_dict['name']
+        print(entity_dict)
+        if 'properties' in entity_dict:
+            self.name = entity_dict['properties']['name']
+        else:
+            self.name = entity_dict['name']
         self.type = entity_dict['type']
-        sys.stdout.write('-')
+
         if 'path' in entity_dict:
             self.endpoint = entity_dict['path']
+        else:
+            self.get_additional_info(entity_dict)
 
-    def get_additional_info(self):
-        print('.')
-        more = get_endpoint(self.endpoint)[0]
-        self.get_images(more)
-        self.get_description(more)
+ #   def get_more(self):
+ #       print('.')
+ #       more = get_endpoint(self.endpoint)[0]
+ #       self.get_additional_info(more)
+
+    def get_additional_info(self, more):
+        if 'relationships' in more:
+            self.get_images(more)
+            self.get_description(more)
 
     def get_images(self, more_info):
         image_base = 'http://images.crunchbase.com/' 
@@ -53,6 +66,15 @@ class Entity:
         self.image = image_base + image_end
 
     def get_description(self, more_info):
-        pass
-        #self.description = more_info['data']['properties']['description']
-        #self.short_description = more_info['data']['properties']['short_description']
+        self.description = more_info['properties']['description']
+        self.short_description = more_info['properties']['short_description']
+
+class EntityCollection:
+    """An object to deal with the state inherent with pagination.
+
+    This is the internal object that will store entities, and arrange for
+    them to be loaded lazily and so on."""
+    def __init__(self, endpoint, payload):
+        self.raw_entities = get_endpoint(endpoint, 1, **payload)
+
+

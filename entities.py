@@ -1,6 +1,7 @@
 import requests
 import sys
 import os
+import uuid
 
 base_url = "http://api.crunchbase.com/v/2/"
 try:
@@ -22,6 +23,7 @@ def get_endpoint(endpoint, pages=1, **payload):
     return results
 
 def get_endpoint_page(endpoint, page, payload):
+    print("endpoint:" +endpoint)
     payload = new_payload(page=str(page), **payload)
     r = requests.get(base_url + endpoint, params=payload)
 
@@ -44,16 +46,12 @@ class Entity:
         else:
             self.name = entity_dict['name']
         self.type = entity_dict['type']
+        self.uuid = str(uuid.uuid4())
 
         if 'path' in entity_dict:
             self.endpoint = entity_dict['path']
         else:
             self.get_additional_info(entity_dict)
-
- #   def get_more(self):
- #       print('.')
- #       more = get_endpoint(self.endpoint)[0]
- #       self.get_additional_info(more)
 
     def get_additional_info(self, more):
         if 'relationships' in more:
@@ -61,13 +59,15 @@ class Entity:
             self.get_description(more)
 
     def get_images(self, more_info):
-        image_base = 'http://images.crunchbase.com/' 
-        image_end = more_info['relationships']['primary_image']['items'][0]['path']
-        self.image = image_base + image_end
+        if 'primary_image' in more_info['relationships']:
+            image_base = 'http://images.crunchbase.com/' 
+            image_end = more_info['relationships']['primary_image']['items'][0]['path']
+            self.image = image_base + image_end
 
     def get_description(self, more_info):
-        self.description = more_info['properties']['description']
         self.short_description = more_info['properties']['short_description']
+        if 'description' in more_info['properties']:
+            self.description = more_info['properties']['description']
 
 class EntityCollection:
     """An object to deal with the state inherent with pagination.

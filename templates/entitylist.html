@@ -2,16 +2,21 @@
 <body>
 	<ul>
 	{% for entity in entities %}
-	<li id="{{ entity.name }}"><h2>{{ entity.name }}</h2>
+	<li id="{{ entity.uuid }}"><h2>{{ entity.name }}</h2>
+        <p>{{ entity.endpoint }}</p>
 		<!--<img src={{ entity.image }} alt="image of entity"></img>
       <p>{{ entity.description }}</p>-->
-	  <img id="{{ entity.name }}_img" src="http://placehold.it/100x100" height=100 alt="{{ entity.name }} image"></img>
+	  <img id="{{ entity.uuid }}_img" src="http://placehold.it/100x100" height=100 alt="{{ entity.name }} image"></img>
 	</li>
     <script>
     $.getJSON("/entity/"+"{{ entity.endpoint }}", function(data) {
-        console.log(data);
-		$('#{{ entity.name }}_img').attr('src', data.image.replace('!',''));
-		$('#{{ entity.name }}').append("<p>"+data["short_description"]+"</p>");
+        if(data.image){
+            newsrc = data.image
+        } else {
+            newsrc = ""
+        }
+        $('#{{ entity.uuid }}_img').attr('src', newsrc);
+		$('#{{ entity.uuid }}').append("<p>"+data["short_description"]+"</p>");
     });
     </script>
 	{% else %}

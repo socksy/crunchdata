@@ -11,9 +11,19 @@ companies = []
 def root():
     return render_template('base.html')
 
-@app.route('/company', methods=["POST"])
-def company():
-    raw_company = en.get_endpoint('organization/'+request.form["company"])[0]
+@app.route('/organization/<org>', methods=["GET", "POST"])
+def company(org):
+    if org is None:
+        org = request.form["company"]
+    raw_company = en.get_endpoint('organization/'+org)[0]
+    company = en.Entity(raw_company)
+    return render_template('entity.html', entity=company)
+
+@app.route('/product/<prod>', methods=["POST"])
+def product(prod):
+    if prod is None:
+        prod = request.form["company"]
+    raw_company = en.get_endpoint('product/'+prod)[0]
     company = en.Entity(raw_company)
     return render_template('entity.html', entity=company)
 

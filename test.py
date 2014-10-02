@@ -1,6 +1,6 @@
 from httmock import all_requests, HTTMock, response, urlmatch
 import requests
-import app
+import entities
 import json
 
 @all_requests
@@ -77,19 +77,19 @@ def products(url, request):
 
 def test_error():
     with HTTMock(error):
-        result = app.get_endpoint('organizations')
+        result = entities.get_endpoint('organizations')
         assert result != None
         assert result == []
 
 def test_no_results():
     with HTTMock(no_results):
-        result = app.get_endpoint('organizations')
+        result = entities.get_endpoint('organizations')
         assert result != None
         assert result == []
 
 def test_companies():
     with HTTMock(companies):
-        result = app.get_endpoint('organizations')
+        result = entities.get_endpoint('organizations')
         assert result != None
         assert result != []
         assert len(result) == 1
@@ -99,7 +99,7 @@ def test_companies():
 
 def test_products():
     with HTTMock(products):
-        result = app.get_endpoint('products')
+        result = entities.get_endpoint('products')
         assert result != None
         assert result != []
         assert len(result) == 1000

@@ -2,8 +2,7 @@
 <body>
 	<ul>
 	{% for entity in entities %}
-	<li id="{{ entity.uuid }}"><h2>{{ entity.name }}</h2>
-        <p>{{ entity.endpoint }}</p>
+    <a href="{{ entity.endpoint }}"><li id="{{ entity.uuid }}"><h2>{{ entity.name }}</h2></a>
 		<!--<img src={{ entity.image }} alt="image of entity"></img>
       <p>{{ entity.description }}</p>-->
 	  <img id="{{ entity.uuid }}_img" src="http://placehold.it/100x100" height=100 alt="{{ entity.name }} image"></img>
